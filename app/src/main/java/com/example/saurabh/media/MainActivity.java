@@ -3,10 +3,7 @@ package com.example.saurabh.media;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,25 +12,26 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import java.io.File;
-
-
-public class MainActivity extends Activity implements MediaScannerConnection.MediaScannerConnectionClient {
-    public Button button;
+public class MainActivity extends Activity  {
+    public Button scan_button,browse_button;
     File file ;//= new File("/storage/sdcard1/music/");
-    String path,path_start = "/storage/sdcard1/";
+    String path,path_scan,path_start = "/storage/sdcard1/";
     File fileList[];
    Context context;
     CheckBox internal,external;
+    EditText editText ;
+    boolean temp = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getApplicationContext();
         setContentView(R.layout.activity_main);
-        Log.i("in","onCreate");
-        button = (Button)findViewById(R.id.butt);
-        final EditText editText = (EditText)findViewById(R.id.pathscan);
+        Log.i("in", "onCreate");
+        editText  = (EditText)findViewById(R.id.pathscan);
+        browse_button = (Button)findViewById(R.id.browse);
+        scan_button = (Button)findViewById(R.id.butt);
+
         internal = (CheckBox)findViewById(R.id.internal);
         external = (CheckBox)findViewById(R.id.external);
         external.setChecked(true);
@@ -60,42 +58,65 @@ public class MainActivity extends Activity implements MediaScannerConnection.Med
                 }
             }
         });
-        /*if(file.isDirectory())
-        //{
-            fileList = file.listFiles();
-            for(int i =0 ; i<fileList.length;i++)
-            {
-                Log.i("File :",fileList[i].getName().toString());
-            }
-        }
-        else
-        {
-            Log.i("failure","failed");
-        }*/
-        button.setOnClickListener(new View.OnClickListener() {
+        scan_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                   //getApplicationContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"
-                         //  + Environment.getExternalStorageDirectory())));
-                // new MediaScannerConnection(getApplicationContext(),mediaScannerConnectionClient).connect();
-                path = path_start + editText.getText().toString() + "/";
-                file = new File(path);
-                if(file.isDirectory()) {
+
+                file = new File( path_start + editText.getText().toString() + "/");
+                if (file.isDirectory()) {
                     fileList = file.listFiles();
-                    Toast.makeText(getApplicationContext(),"Media scanner running...",Toast.LENGTH_SHORT).show();
-                    for(int i =0 ; i<fileList.length;i++) {
-                        Log.i("File :",fileList[i].getName().toString());
+                    Toast.makeText(getApplicationContext(), "Media scanner running...", Toast.LENGTH_SHORT).show();
+                    for (int i = 0; i < fileList.length; i++) {
+                        Log.i("File :", fileList[i].getName().toString());
                         new SingleMediaScanner(context, fileList[i]);
                     }
                 }
+                else if(temp){
+                    Log.i("wasted",path_scan);
+                    file = new File(path_scan);
+
+                    new SingleMediaScanner(context,file);
+                    Toast.makeText(getApplicationContext(), "Media scanner running...", Toast.LENGTH_SHORT).show();
+                }
                 else
                 {
-                    Toast.makeText(getApplicationContext(),editText.getText().toString() + " is not a valid directory",Toast.LENGTH_LONG).show();
-                    Log.i("path",""+path);
+                    Toast.makeText(getApplicationContext(), editText.getText() +" is not a valid directory/file", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+        browse_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Intent intent = getPackageManager().getLaunchIntentForPackage("com.example.saurabh.fileexplorer");
+                //startActivity(intent);
+                Intent intent = new Intent(MainActivity.this,folder_open.class);
+                if(external.isChecked())
+                {
+                    intent.putExtra("path_default","/storage/sdcard1/");
+                }
+                else if(internal.isChecked())
+                {
+                    intent.putExtra("path_default","/storage/sdcard0/");
+                }
+                else
+                {
+                    intent.putExtra("path_default","/");
+                }
 
+                startActivityForResult(intent,0);
+            }
+        });
+
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        if(requestCode == 0 && resultCode == RESULT_OK)
+        {
+            path_scan = data.getStringExtra("path");
+            File file2 = new File(path_scan);
+            editText.setText(file2.getName());
+            temp = true;
+        }
     }
 
 
@@ -109,7 +130,7 @@ public class MainActivity extends Activity implements MediaScannerConnection.Med
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
+        // automatically handle clicks on the Home/Up scan_button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
@@ -121,13 +142,5 @@ public class MainActivity extends Activity implements MediaScannerConnection.Med
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onMediaScannerConnected() {
 
-    }
-
-    @Override
-    public void onScanCompleted(String path, Uri uri) {
-
-    }
 }
