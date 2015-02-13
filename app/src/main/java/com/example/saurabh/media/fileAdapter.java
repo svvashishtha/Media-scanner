@@ -1,8 +1,5 @@
 package com.example.saurabh.media;
 
-/**
- * Created by Saurabh on 1/30/2015.
- */
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -40,11 +37,30 @@ public class fileAdapter extends BaseAdapter{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View row = inflater.inflate(R.layout.row_layout,parent,false);
-        TextView textView = (TextView)row.findViewById(R.id.row);
-        textView.setText(files[position].getName());
-        return row;
+
+        View_Holder view_holder;
+
+        if(convertView==null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.row_layout, parent, false);
+
+            view_holder = new View_Holder();
+            view_holder.textViewItem = (TextView) convertView.findViewById(R.id.row);
+
+            convertView.setTag(view_holder);
+        }
+        else
+        {
+            view_holder = (View_Holder)convertView.getTag();
+        }
+        view_holder.textViewItem.setText(files[position].getName());
+        view_holder.textViewItem.setTag(files[position].getName());
+        return convertView;
+    }
+
+
+    static class View_Holder
+    {
+        TextView textViewItem;
     }
 }
-

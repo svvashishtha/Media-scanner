@@ -67,7 +67,7 @@ public class MainActivity extends Activity  {
                     fileList = file.listFiles();
                     Toast.makeText(getApplicationContext(), "Media scanner running...", Toast.LENGTH_SHORT).show();
                     for (int i = 0; i < fileList.length; i++) {
-                        Log.i("File :", fileList[i].getName().toString());
+                        Log.i("File :", fileList[i].getName());
                         new SingleMediaScanner(context, fileList[i]);
                     }
                 }
@@ -87,8 +87,6 @@ public class MainActivity extends Activity  {
         browse_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent intent = getPackageManager().getLaunchIntentForPackage("com.example.saurabh.fileexplorer");
-                //startActivity(intent);
                 Intent intent = new Intent(MainActivity.this,folder_open.class);
                 if(external.isChecked())
                 {

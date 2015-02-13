@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
@@ -12,12 +11,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
-
 import java.io.File;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+
 
 
 public class folder_open extends Activity {
@@ -88,8 +83,13 @@ public class folder_open extends Activity {
         {
             AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
             menu.setHeaderTitle(files[info.position].getName());
+            if(files[info.position].isDirectory()){
             menu.add("Open");
-            menu.add("select");
+            menu.add("select");}
+            else
+            {
+                menu.add("select");
+            }
         }
     }
     @Override
@@ -100,18 +100,16 @@ public class folder_open extends Activity {
         Log.i("on create options",""+item_name);
         if (item_name == "Open")
         {
-            if(files[info.position].isDirectory())
-            {
+
             Intent intent = new Intent(folder_open.this,folder_open.class);
             Log.i("path",files[info.position].getAbsolutePath());
             intent.putExtra("path_default",files[info.position].getAbsolutePath());
             startActivityForResult(intent,0);
-            }
+
         }
         else
         {
             Intent intent1 = new Intent();
-
             intent1.putExtra("path",files[info.position].getAbsolutePath());
             setResult(RESULT_OK,intent1);
             finish();
