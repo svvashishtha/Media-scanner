@@ -18,7 +18,7 @@ public class MainActivity extends Activity  {
     File file ;//= new File("/storage/sdcard1/music/");
     String path,path_scan,path_start = "/storage/sdcard1/";
     File fileList[];
-   Context context;
+    Context context;
     CheckBox internal,external;
     EditText editText ;
     boolean temp = false;
